@@ -1,3 +1,4 @@
+import { fail, error } from '@sveltejs/kit';
 import { GET_USERS, SIGN_IN, SIGN_UP } from '../graphql/queries';
 import { client } from './api';
 
@@ -33,8 +34,12 @@ export async function signIn({ email, password }: signInDTO) {
 	client.setHeaders({ authorization: `Bearer ${token}` });
 }
 
-export async function signUp(data: signUpDTO) {
-	const response = await client.request<SignUpData>(SIGN_UP, { data });
-
-	console.log(response);
+export async function signUp({ email, name, password }: signUpDTO) {
+	try {
+		const response = await client.request<SignUpData>(SIGN_UP, { data: { email, name, password } });
+	} catch (err) {
+		throw error(403, {
+			message: 'Email is already in use'
+		});
+	}
 }
