@@ -1,5 +1,5 @@
-import { fail, error } from '@sveltejs/kit';
-import { GET_USERS, SIGN_IN, SIGN_UP } from '../graphql/queries';
+import { error } from '@sveltejs/kit';
+import { SIGN_IN, SIGN_UP } from '../graphql/queries';
 import { client } from './api';
 
 interface signInDTO {
@@ -22,7 +22,6 @@ interface SignUpData {
 		id: number;
 		name: string;
 		createdAt: Date;
-		permissions: string[];
 	};
 }
 export async function signIn({ email, password }: signInDTO) {
@@ -36,7 +35,7 @@ export async function signIn({ email, password }: signInDTO) {
 
 export async function signUp({ email, name, password }: signUpDTO) {
 	try {
-		const response = await client.request<SignUpData>(SIGN_UP, { data: { email, name, password } });
+		return await client.request<SignUpData>(SIGN_UP, { data: { email, name, password } });
 	} catch (err) {
 		throw error(403, {
 			message: 'Email is already in use'
