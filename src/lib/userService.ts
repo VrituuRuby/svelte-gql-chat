@@ -12,7 +12,7 @@ interface signUpDTO {
 	password: string;
 }
 
-interface AuthResponse {
+interface SignInData {
 	signIn: {
 		token: string;
 	};
@@ -24,16 +24,23 @@ interface SignUpData {
 		createdAt: Date;
 	};
 }
-export async function signIn({ email, password }: signInDTO) {
-	const response = await client.request<AuthResponse>(SIGN_IN, { data: { email, password } });
-	const { token } = response.signIn;
-	console.log(token);
+export async function signIn({ email, password }: signInDTO): Promise<string> {
+	try {
+		const response = await client.request<SignInData>(SIGN_IN, { data: { email, password } });
+		const { token } = response.signIn;
 
-	localStorage.setItem('@svelte-chat:access-token', token);
-	client.setHeaders({ authorization: `Bearer ${token}` });
+		localStorage.setItem('@svelte-chat:access-token', token);
+		client.setHeaders({ authorization: `Bearer ${token}` });
+
+		return token;
+	} catch (err) {
+		throw error(403, {
+			message: 'Wrong email or password'
+		});
+	}
 }
 
-export async function signUp({ email, name, password }: signUpDTO) {
+export async function signUp({ email, name, password }: signUpDTO): Promise<SignUpData> {
 	try {
 		return await client.request<SignUpData>(SIGN_UP, { data: { email, name, password } });
 	} catch (err) {
