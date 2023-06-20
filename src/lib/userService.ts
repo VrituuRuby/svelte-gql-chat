@@ -24,6 +24,11 @@ interface SignUpData {
 		createdAt: Date;
 	};
 }
+interface SignUpBackendError {
+	backendError: {
+		message: string;
+	};
+}
 export async function signIn({ email, password }: signInDTO): Promise<string> {
 	try {
 		const response = await client.request<SignInData>(SIGN_IN, { data: { email, password } });
@@ -40,12 +45,14 @@ export async function signIn({ email, password }: signInDTO): Promise<string> {
 	}
 }
 
-export async function signUp({ email, name, password }: signUpDTO): Promise<SignUpData> {
+export async function signUp({
+	email,
+	name,
+	password
+}: signUpDTO): Promise<SignUpData | SignUpBackendError> {
 	try {
 		return await client.request<SignUpData>(SIGN_UP, { data: { email, name, password } });
 	} catch (err) {
-		throw error(403, {
-			message: 'Email is already in use'
-		});
+		throw new Error('Email is already in use');
 	}
 }

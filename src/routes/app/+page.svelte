@@ -6,7 +6,7 @@
 	<title>ChatGQL</title>
 </svelte:head>
 
-<main class="bg-default h-full rounded-md drop-shadow-lg">
+<main class="bg-default w-full h-full rounded-md drop-shadow-lg">
 	<ContactList />
 </main>
 

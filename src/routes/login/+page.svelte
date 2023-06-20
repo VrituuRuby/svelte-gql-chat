@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { signIn } from '$lib/userService';
 	import { ZodError, z } from 'zod';
 
@@ -16,6 +17,7 @@
 			const formData = getFormData.parse({ email, password });
 			const response = await signIn(formData);
 			console.log(response);
+			goto('/app');
 		} catch (err) {
 			if (err instanceof z.ZodError) {
 				error = err;
@@ -31,7 +33,7 @@
 
 <form
 	on:submit|preventDefault={handleSubmit}
-	class="w-full max-w-[500px] flex flex-col gap-2 bg-gray-100 p-6 justify-center items-center font-[Roboto] rounded-md drop-shadow-lg text-sm"
+	class="w-full max-w-[500px] flex flex-col gap-2 mt-4 bg-gray-100 p-6 justify-center items-center font-[Roboto] rounded-md drop-shadow-lg text-sm"
 >
 	<img src="/images/logo.svg" alt="" />
 	<h1 class="font-rubik text-lg font-bold">Welcome to GQL Chat!</h1>
@@ -84,7 +86,6 @@
 		display: flex;
 		justify-content: center;
 		align-items: flex-start;
-		padding: 4rem;
 		height: 100vh;
 		background: linear-gradient(116.15deg, #4772e1 4.13%, #cb397f 97.53%);
 		background-repeat: no-repeat;

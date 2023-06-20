@@ -1,12 +1,15 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { signUp } from '$lib/userService';
-	import { ZodError, z } from 'zod';
+	import { responsePathAsArray } from 'graphql';
+	import { ZodError, z, type typeToFlattenedError } from 'zod';
 
 	let email = '';
 	let name = '';
 	let password = '';
 	let confirmPassword = '';
-	let error: ZodError;
+	let error: typeToFlattenedError<any>;
+	let backendError: Error;
 
 	const getFormData = z
 		.object({
@@ -28,14 +31,12 @@
 		try {
 			const formData = getFormData.parse({ email, name, password, confirmPassword });
 			const response = await signUp(formData);
-			console.log(response);
+			goto('/login');
 		} catch (err) {
 			if (err instanceof z.ZodError) {
-				error = err;
-				console.log(error);
-			} else {
-				alert(err);
-				console.log(err);
+				error = err.flatten();
+			} else if (err instanceof Error) {
+				backendError = err;
 			}
 		}
 	}
@@ -57,10 +58,14 @@
 			type="email"
 			bind:value={email}
 			name="email"
-			required
 			placeholder="Email"
 			class="text-base font-roboto py-1.5 px-3 rounded-full bg-gray-50 shadow-neu-inner font-normal text-black focus:outline-light-purple"
 		/>
+		{#if error?.fieldErrors.email}
+			<p class="text-sm font-normal text-red-600">{error?.fieldErrors.email}</p>
+		{:else if backendError}
+			<p class="text-sm font-normal text-red-600">{backendError.message}</p>
+		{/if}
 	</label>
 	<label class="flex flex-col font-rubik font-semibold text-gray-500">
 		User
@@ -68,40 +73,41 @@
 			type="text"
 			bind:value={name}
 			name="username"
-			required
 			placeholder="Username"
 			class="text-base font-roboto py-1.5 px-3 rounded-full bg-gray-50 shadow-neu-inner font-normal text-black focus:outline-[#BBA6F8]"
 		/>
+		{#if error?.fieldErrors.name}
+			<p class="text-sm font-normal text-red-600">{error?.fieldErrors.name}</p>
+		{/if}
 	</label>
 
 	<label class="flex flex-col font-rubik font-semibold text-gray-500">
 		Password
 		<input
-			required
 			bind:value={password}
 			name="password"
 			type="password"
 			placeholder="Password"
 			class="text-base font-roboto py-1.5 px-3 rounded-full bg-gray-50 shadow-neu-inner font-normal text-black focus:outline-[#BBA6F8]"
 		/>
+		{#if error?.fieldErrors.password}
+			<p class="text-sm font-normal text-red-600">{error?.fieldErrors.password}</p>
+		{/if}
 	</label>
 
 	<label class="flex flex-col font-rubik font-semibold text-gray-500">
 		Confirm Password
 		<input
-			required
 			bind:value={confirmPassword}
 			name="confirmPassword"
 			type="password"
 			placeholder="Password"
 			class="text-base font-roboto py-1.5 px-3 rounded-full bg-gray-50 shadow-neu-inner font-normal text-black focus:outline-[#BBA6F8]"
 		/>
+		{#if error?.formErrors[0]}
+			<p class="text-sm font-normal text-red-600">{error?.formErrors[0]}</p>
+		{/if}
 	</label>
-	{#if error}
-		{#each error.errors as err}
-			<p class="text-red-600">{err.message}</p>
-		{/each}
-	{/if}
 	<button
 		type="submit"
 		class="shadow-neu-outter px-3 py-1.5 rounded-full active:shadow-neu-inner active:translate-y-0.5 transition focus:outline-[#BBA6F8]"
