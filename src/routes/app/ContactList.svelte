@@ -2,10 +2,12 @@
 	import Icon from '@iconify/svelte';
 </script>
 
-<div class="flex flex-col p-2 gap-2 w-1/4">
+<div class="flex flex-col p-2 gap-2 h-full w-1/4 border-r border-slate-300">
 	<div class="flex gap-2 items-center">
 		<img src="/images/logo.svg" alt="ChatGQL" width="42px" />
-		<div class="flex items-center flex-1 gap-1 rounded-full shadow-neu-inner bg-default px-1.5">
+		<div
+			class="flex items-center flex-1 gap-1 rounded-full shadow-neu-inner bg-default px-1.5 focus-within:outline outline-2 outline-light-purple"
+		>
 			<Icon icon="material-symbols:search" class="text-slate-500" width="24px" />
 			<input type="search" class="focus:outline-none bg-transparent w-full py-2" />
 		</div>

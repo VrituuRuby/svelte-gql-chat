@@ -1,4 +1,5 @@
 <script>
+	import Chat from './Chat.svelte';
 	import ContactList from './ContactList.svelte';
 </script>
 
@@ -8,6 +9,7 @@
 
 <main class="bg-default w-full h-full rounded-md drop-shadow-lg">
 	<ContactList />
+	<Chat />
 </main>
 
 <style lang="postcss">

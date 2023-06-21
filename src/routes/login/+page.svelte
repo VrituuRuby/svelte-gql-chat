@@ -1,30 +1,10 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { signIn } from '$lib/userService';
-	import { ZodError, z } from 'zod';
+	import { error } from '@sveltejs/kit';
 
 	let email = '';
 	let password = '';
-	let error: ZodError;
 
-	const getFormData = z.object({
-		email: z.string().email('Email is missing'),
-		password: z.string()
-	});
-
-	async function handleSubmit() {
-		try {
-			const formData = getFormData.parse({ email, password });
-			const response = await signIn(formData);
-			console.log(response);
-			goto('/app');
-		} catch (err) {
-			if (err instanceof z.ZodError) {
-				error = err;
-				console.log(error);
-			}
-		}
-	}
+	export let form;
 </script>
 
 <svelte:head>
@@ -32,7 +12,7 @@
 </svelte:head>
 
 <form
-	on:submit|preventDefault={handleSubmit}
+	method="post"
 	class="w-full max-w-[500px] flex flex-col gap-2 mt-4 bg-gray-100 p-6 justify-center items-center font-[Roboto] rounded-md drop-shadow-lg text-sm"
 >
 	<img src="/images/logo.svg" alt="" />
@@ -61,10 +41,8 @@
 		/>
 	</label>
 
-	{#if error}
-		{#each error.errors as err}
-			<p class="text-red-600">{err.message}</p>
-		{/each}
+	{#if form?.backendError}
+		<p class="text-red-600">{form?.backendError.message}</p>
 	{/if}
 
 	<button

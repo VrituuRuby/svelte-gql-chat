@@ -28,3 +28,25 @@ export const SIGN_UP = gql`
 		}
 	}
 `;
+
+export const GET_MESSAGES = gql`
+	query userData {
+		user {
+			id
+			name
+			email
+			createdAt
+			rooms {
+				id
+				name
+				messages {
+					text
+					createdAt
+					user {
+						name
+					}
+				}
+			}
+		}
+	}
+`;

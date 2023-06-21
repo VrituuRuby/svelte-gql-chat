@@ -31,7 +31,6 @@ export const actions: Actions = {
 			await signUp(formData);
 		} catch (err) {
 			if (err instanceof z.ZodError) {
-				console.log(err.flatten());
 				return {
 					errors: err.flatten()
 				};
