@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { SIGN_IN, SIGN_UP } from '../graphql/queries';
-import { getClient } from './api';
+import { client, setToken } from './api';
 
 interface signInDTO {
 	email: string;
@@ -34,9 +34,9 @@ export const ACCESS_TOKEN_KEY = '@svelte-chat-1.0:access-token';
 
 export async function signIn({ email, password }: signInDTO): Promise<string> {
 	try {
-		const response = await getClient().request<SignInData>(SIGN_IN, { data: { email, password } });
+		const response = await client.request<SignInData>(SIGN_IN, { data: { email, password } });
 		const { token } = response.signIn;
-		getClient().setHeaders({ authorization: `Bearer ${token}` });
+		setToken(token);
 		return token;
 	} catch (err) {
 		throw error(403, {
@@ -51,7 +51,7 @@ export async function signUp({
 	password
 }: signUpDTO): Promise<SignUpData | SignUpBackendError> {
 	try {
-		return await getClient().request<SignUpData>(SIGN_UP, { data: { email, name, password } });
+		return await client.request<SignUpData>(SIGN_UP, { data: { email, name, password } });
 	} catch (err) {
 		throw new Error('Email is already in use');
 	}

@@ -1,18 +1,34 @@
-import { error } from '@sveltejs/kit';
 import { GET_MESSAGES } from '../graphql/queries';
-import { getClient } from './api';
+import { client } from './api';
 
-interface MessagesData {
-	userData: any;
+interface IUser {
+	createdAt: Date;
+	email: string;
+	id: 1;
+	name: string;
+	rooms: IRoom[];
 }
 
-export async function loadMessages(token: string) {
+export interface IRoom {
+	name: string;
+	id: number;
+	message: {
+		text: string;
+		createdAt: Date;
+		user: {
+			name: string;
+		};
+	};
+}
+interface MessagesData {
+	user: IUser;
+}
+
+export async function loadMessages() {
 	try {
-		getClient().setHeader('Authorization', `Berare ${token}`);
-		const response = await getClient().request<MessagesData>(GET_MESSAGES);
-		console.log(response);
+		const response = await client.request<MessagesData>(GET_MESSAGES);
 		return response;
 	} catch (err) {
-		console.log(err);
+		throw Error('Expired session');
 	}
 }

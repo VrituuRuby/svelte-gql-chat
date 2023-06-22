@@ -25,7 +25,7 @@ export const actions: Actions = {
 			});
 			const token = await signIn(formData);
 
-			cookies.set(ACCESS_TOKEN_KEY, token);
+			cookies.set(ACCESS_TOKEN_KEY, token, { maxAge: 60 * 24 });
 		} catch (err) {
 			if (err instanceof z.ZodError) {
 				return {

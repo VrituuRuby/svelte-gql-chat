@@ -1,6 +1,10 @@
 <script>
 	import Chat from './Chat.svelte';
 	import ContactList from './ContactList.svelte';
+
+	export let data;
+
+	console.log(data);
 </script>
 
 <svelte:head>
@@ -8,7 +12,7 @@
 </svelte:head>
 
 <main class="bg-default w-full h-full rounded-md drop-shadow-lg">
-	<ContactList />
+	<ContactList rooms={data.user.rooms} />
 	<Chat />
 </main>
 
