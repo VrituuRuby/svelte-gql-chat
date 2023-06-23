@@ -4,7 +4,7 @@ import { client } from './api';
 interface IUser {
 	createdAt: Date;
 	email: string;
-	id: 1;
+	id: number;
 	name: string;
 	rooms: IRoom[];
 }
@@ -12,21 +12,24 @@ interface IUser {
 export interface IRoom {
 	name: string;
 	id: number;
-	message: {
-		text: string;
-		createdAt: Date;
-		user: {
-			name: string;
-		};
+	messages: IMessage[];
+}
+
+export interface IMessage {
+	text: string;
+	createdAt: Date;
+	user: {
+		name: string;
+		id: number;
 	};
 }
-interface MessagesData {
+interface Data {
 	user: IUser;
 }
 
 export async function loadMessages() {
 	try {
-		const response = await client.request<MessagesData>(GET_MESSAGES);
+		const response = await client.request<Data>(GET_MESSAGES);
 		return response;
 	} catch (err) {
 		throw Error('Expired session');

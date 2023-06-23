@@ -44,6 +44,7 @@ export const GET_MESSAGES = gql`
 					createdAt
 					user {
 						name
+						id
 					}
 				}
 			}

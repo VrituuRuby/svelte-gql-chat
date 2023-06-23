@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/bin/yarn add @types/zod
+  /usr/local/bin/node /usr/bin/yarn add @types/dayjs -D
 
 PATH: 
   /home/victor/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/var/lib/snapd/snap/bin
@@ -14,7 +14,7 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2fzod: Not found
+  Error: https://registry.yarnpkg.com/@types%2fdayjs: Not found
       at params.callback [as _callback] (/usr/lib/node_modules/yarn/lib/cli.js:66145:18)
       at self.callback (/usr/lib/node_modules/yarn/lib/cli.js:140890:22)
       at Request.emit (node:events:513:28)
@@ -41,6 +41,7 @@ npm manifest:
   		"format": "prettier --plugin-search-dir . --write ."
   	},
   	"devDependencies": {
+  		"@iconify/svelte": "^3.1.4",
   		"@sveltejs/adapter-auto": "^2.0.0",
   		"@sveltejs/kit": "^1.5.0",
   		"@typescript-eslint/eslint-plugin": "^5.45.0",
@@ -49,6 +50,7 @@ npm manifest:
   		"eslint": "^8.28.0",
   		"eslint-config-prettier": "^8.5.0",
   		"eslint-plugin-svelte": "^2.26.0",
+  		"iconify-icon": "^1.0.7",
   		"postcss": "^8.4.24",
   		"prettier": "^2.8.0",
   		"prettier-plugin-svelte": "^2.8.1",
@@ -61,6 +63,7 @@ npm manifest:
   	},
   	"type": "module",
   	"dependencies": {
+  		"dayjs": "^1.11.8",
   		"graphql": "^16.6.0",
   		"graphql-request": "^6.1.0",
   		"graphql-tag": "^2.12.6",
@@ -247,6 +250,18 @@ Lockfile:
     version "1.2.1"
     resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
     integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
+  
+  "@iconify/svelte@^3.1.4":
+    version "3.1.4"
+    resolved "https://registry.yarnpkg.com/@iconify/svelte/-/svelte-3.1.4.tgz#728fa18ea03da8541a64565c1b2b0c2b8dc0d417"
+    integrity sha512-YDwQlN46ka8KPRayDb7TivmkAPizfTXi6BSRNqa1IV0+byA907n8JcgQafA7FD//pW5XCuuAhVx6uRbKTo+CfA==
+    dependencies:
+      "@iconify/types" "^2.0.0"
+  
+  "@iconify/types@^2.0.0":
+    version "2.0.0"
+    resolved "https://registry.yarnpkg.com/@iconify/types/-/types-2.0.0.tgz#ab0e9ea681d6c8a1214f30cd741fe3a20cc57f57"
+    integrity sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==
   
   "@jridgewell/gen-mapping@^0.3.2":
     version "0.3.3"
@@ -665,6 +680,11 @@ Lockfile:
     version "3.0.0"
     resolved "https://registry.yarnpkg.com/cssesc/-/cssesc-3.0.0.tgz#37741919903b868565e1c09ea747445cd18983ee"
     integrity sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==
+  
+  dayjs@^1.11.8:
+    version "1.11.8"
+    resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.8.tgz#4282f139c8c19dd6d0c7bd571e30c2d0ba7698ea"
+    integrity sha512-LcgxzFoWMEPO7ggRv1Y2N31hUf2R0Vj7fuy/m+Bg1K8rr+KAs1AEy4y9jd5DXe8pbHgX+srkHNS7TH6Q6ZhYeQ==
   
   debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4:
     version "4.3.4"
@@ -1095,6 +1115,13 @@ Lockfile:
     integrity sha512-f2dvO0VU6Oej7RkWJGrehjbzMAjFp5/VKPp5tTpWIV4JHHZK1/BxbFRtf/siA2SWTe09caDmVtYYzWEIbBS4zw==
     dependencies:
       function-bind "^1.1.1"
+  
+  iconify-icon@^1.0.7:
+    version "1.0.7"
+    resolved "https://registry.yarnpkg.com/iconify-icon/-/iconify-icon-1.0.7.tgz#d7e1f5d45a88486abcc977583da62e6e9e635572"
+    integrity sha512-MxaO3Jhf3f5ymPWGHR9x74f90TNKcq1D+B2iGucGhVtqAgbC9EtM06kKiTGH2CKELNnexckwhrA3/+OpT4HKFw==
+    dependencies:
+      "@iconify/types" "^2.0.0"
   
   ignore@^5.2.0:
     version "5.2.4"

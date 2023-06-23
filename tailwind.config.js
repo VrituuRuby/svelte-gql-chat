@@ -18,6 +18,10 @@ export default {
 			boxShadow: {
 				'neu-inner': 'inset 4px 4px 4px #D2D1EB, inset -4px -4px 4px #FFFFFF',
 				'neu-outter': '4px 4px 4px #D2D1EB,-4px -4px 4px #FFFFFF'
+			},
+			dropShadow: {
+				'neu-inner': 'inset 4px 4px 4px #D2D1EB, inset -4px -4px 4px #FFFFFF',
+				'neu-outter': ['4px 4px 4px #D2D1EB', ' -4px -4px 4px #FFFFFF']
 			}
 		}
 	},
