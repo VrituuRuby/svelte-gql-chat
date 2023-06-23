@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { signUp } from '$lib/userService';
-	import { responsePathAsArray } from 'graphql';
-	import { ZodError, z, type typeToFlattenedError } from 'zod';
+	import { ApolloError } from '@apollo/client/errors';
+	import { mutation } from 'svelte-apollo';
+	import { z } from 'zod';
+	import { SIGN_UP } from '../../graphql/queries';
 
 	let email = '';
 	let name = '';
 	let password = '';
 	let confirmPassword = '';
-	let error: typeToFlattenedError<any>;
-	let backendError: Error;
+	let formError: string[];
 
 	const getFormData = z
 		.object({
@@ -27,18 +27,24 @@
 			}
 		});
 
-	async function handleSubmit() {
+	const register = mutation(SIGN_UP);
+	async function signUp() {
 		try {
 			const formData = getFormData.parse({ email, name, password, confirmPassword });
-			const response = await signUp(formData);
+			const data = { email: formData.email, password: formData.password, name: formData.name };
+			await register({ variables: { data } });
 			goto('/login');
 		} catch (err) {
 			if (err instanceof z.ZodError) {
-				error = err.flatten();
-			} else if (err instanceof Error) {
-				backendError = err;
+				formError = err.issues.map((e) => e.message);
+			} else if (err instanceof ApolloError) {
+				formError = [err.message];
 			}
 		}
+	}
+
+	async function handleSubmit() {
+		signUp();
 	}
 </script>
 
@@ -61,11 +67,6 @@
 			placeholder="Email"
 			class="text-base font-roboto py-1.5 px-3 rounded-full bg-gray-50 shadow-neu-inner font-normal text-black focus:outline-light-purple"
 		/>
-		{#if error?.fieldErrors.email}
-			<p class="text-sm font-normal text-red-600">{error?.fieldErrors.email}</p>
-		{:else if backendError}
-			<p class="text-sm font-normal text-red-600">{backendError.message}</p>
-		{/if}
 	</label>
 	<label class="flex flex-col font-rubik font-semibold text-gray-500">
 		User
@@ -76,9 +77,6 @@
 			placeholder="Username"
 			class="text-base font-roboto py-1.5 px-3 rounded-full bg-gray-50 shadow-neu-inner font-normal text-black focus:outline-[#BBA6F8]"
 		/>
-		{#if error?.fieldErrors.name}
-			<p class="text-sm font-normal text-red-600">{error?.fieldErrors.name}</p>
-		{/if}
 	</label>
 
 	<label class="flex flex-col font-rubik font-semibold text-gray-500">
@@ -90,9 +88,6 @@
 			placeholder="Password"
 			class="text-base font-roboto py-1.5 px-3 rounded-full bg-gray-50 shadow-neu-inner font-normal text-black focus:outline-[#BBA6F8]"
 		/>
-		{#if error?.fieldErrors.password}
-			<p class="text-sm font-normal text-red-600">{error?.fieldErrors.password}</p>
-		{/if}
 	</label>
 
 	<label class="flex flex-col font-rubik font-semibold text-gray-500">
@@ -104,10 +99,13 @@
 			placeholder="Password"
 			class="text-base font-roboto py-1.5 px-3 rounded-full bg-gray-50 shadow-neu-inner font-normal text-black focus:outline-[#BBA6F8]"
 		/>
-		{#if error?.formErrors[0]}
-			<p class="text-sm font-normal text-red-600">{error?.formErrors[0]}</p>
-		{/if}
 	</label>
+
+	{#if formError}
+		{#each formError as error, i}
+			<p class="text-sm text-red-600">{error}</p>
+		{/each}
+	{/if}
 	<button
 		type="submit"
 		class="shadow-neu-outter px-3 py-1.5 rounded-full active:shadow-neu-inner active:translate-y-0.5 transition focus:outline-[#BBA6F8]"
