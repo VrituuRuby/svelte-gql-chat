@@ -1,10 +1,40 @@
 <script lang="ts">
-	import { error } from '@sveltejs/kit';
+	import { mutation } from 'svelte-apollo';
+	import { SIGN_IN } from '../../graphql/queries.js';
+	import { ZodError, z } from 'zod';
+	import { ApolloError } from '@apollo/client/errors';
+	import { goto } from '$app/navigation';
 
 	let email = '';
 	let password = '';
 
-	export let form;
+	let formError: string[];
+
+	const getFormData = z.object({
+		email: z.string().email('Email is missing'),
+		password: z.string().nonempty('Password is missing')
+	});
+
+	const auth = mutation(SIGN_IN);
+
+	async function signIn() {
+		try {
+			const formData = getFormData.parse({ email, password });
+			await auth({ variables: { data: formData } });
+			goto('/app');
+		} catch (err) {
+			if (err instanceof ZodError) {
+				formError = err.issues.map((e) => e.message);
+			}
+			if (err instanceof ApolloError) {
+				formError = [err.message];
+			}
+		}
+	}
+	async function handleSubmit() {
+		formError = [];
+		signIn();
+	}
 </script>
 
 <svelte:head>
@@ -12,7 +42,7 @@
 </svelte:head>
 
 <form
-	method="post"
+	on:submit|preventDefault={handleSubmit}
 	class="w-full max-w-[500px] flex flex-col gap-2 mt-4 bg-gray-100 p-6 justify-center items-center font-[Roboto] rounded-md drop-shadow-lg text-sm"
 >
 	<img src="/images/logo.svg" alt="" />
@@ -23,7 +53,6 @@
 			type="email"
 			bind:value={email}
 			name="email"
-			required
 			placeholder="Email"
 			class="text-base font-roboto py-1.5 px-3 rounded-full bg-gray-50 shadow-neu-inner font-normal text-black focus:outline-light-purple"
 		/>
@@ -32,7 +61,6 @@
 	<label class="flex flex-col font-rubik font-semibold text-gray-500">
 		Password
 		<input
-			required
 			bind:value={password}
 			name="password"
 			type="password"
@@ -41,8 +69,10 @@
 		/>
 	</label>
 
-	{#if form?.backendError}
-		<p class="text-red-600">{form?.backendError.message}</p>
+	{#if formError}
+		{#each formError as error}
+			<p class="text-red-600 text-sm">{error}</p>
+		{/each}
 	{/if}
 
 	<button
