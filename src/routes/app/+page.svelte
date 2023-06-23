@@ -1,13 +1,49 @@
 <script lang="ts">
-	import type { IRoom } from '$lib/chatService';
+	import { query } from 'svelte-apollo';
 	import Chat from './components/Chat.svelte';
-	import ContactList from './components/ContactList.svelte';
+	import { GET_USER_DATA } from '../../graphql/queries';
+	import { onMount } from 'svelte';
+	import RoomsList from './components/RoomsList.svelte';
+	import { goto } from '$app/navigation';
 
-	export let data;
-	let selectedRoom: IRoom | undefined;
+	interface UserData {
+		user: {
+			id: string;
+			email: string;
+			name: string;
+			rooms: Room[];
+		};
+	}
 
+	interface Room {
+		id: number;
+		name: string;
+		messages: {
+			text: string;
+			createdAt: Date;
+			user: {
+				id: string;
+				name: string;
+			};
+		}[];
+	}
+
+	let selectRoom: Room | undefined;
+
+	let userData: UserData;
+	const getData = query<UserData>(GET_USER_DATA);
+	async function loadData() {
+		try {
+			userData = (await getData.result()).data;
+		} catch (error) {
+			console.log(error);
+			goto('/login');
+		}
+	}
+
+	onMount(loadData);
 	function handleSelectRoom(event: CustomEvent) {
-		selectedRoom = data.user.rooms.find((room) => room.id === event.detail.id);
+		selectRoom = userData?.user.rooms.find((room) => room.id === event.detail.id);
 	}
 </script>
 
@@ -15,12 +51,14 @@
 	<title>ChatGQL</title>
 </svelte:head>
 
-<main class="bg-default w-full h-full rounded-md drop-shadow-lg flex flex-1">
-	<ContactList rooms={data.user.rooms} on:selectRoom={handleSelectRoom} />
-	{#if selectedRoom}
-		<Chat chat={selectedRoom} />
+<main
+	class="bg-default w-full h-full rounded-md drop-shadow-lg flex flex-1 flex-shrink-[2] basis-0 overflow-hidden"
+>
+	<RoomsList rooms={userData?.user.rooms} on:selectRoom={handleSelectRoom} />
+	{#if selectRoom}
+		<Chat chat={selectRoom} />
 	{:else}
-		<h3>Vazio</h3>
+		<h1>Clique em um chat para abrir a conversa</h1>
 	{/if}
 </main>
 

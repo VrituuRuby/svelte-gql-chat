@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client/core';
 
 export const SIGN_IN = gql`
 	mutation signIn($data: AuthInput!) {
@@ -20,7 +20,7 @@ export const GET_USERS = gql`
 
 export const SIGN_UP = gql`
 	mutation ($data: CreateUserInput!) {
-		createUser(data: $data) {
+		register(data: $data) {
 			id
 			name
 			createdAt
@@ -29,8 +29,8 @@ export const SIGN_UP = gql`
 	}
 `;
 
-export const GET_MESSAGES = gql`
-	query userData {
+export const GET_USER_DATA = gql`
+	query {
 		user {
 			id
 			name

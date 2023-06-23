@@ -15,12 +15,21 @@
 		password: z.string().nonempty('Password is missing')
 	});
 
-	const auth = mutation(SIGN_IN);
+	interface SignInData {
+		signIn: {
+			token: string;
+		};
+	}
+	const auth = mutation<SignInData>(SIGN_IN);
 
 	async function signIn() {
 		try {
 			const formData = getFormData.parse({ email, password });
-			await auth({ variables: { data: formData } });
+			const response = await auth({ variables: { data: formData } });
+			const token = response.data?.signIn?.token;
+			token
+				? localStorage.setItem('@svelte-chat-1.0:access-token', token)
+				: new Error('Token not recieved');
 			goto('/app');
 		} catch (err) {
 			if (err instanceof ZodError) {
@@ -29,6 +38,7 @@
 			if (err instanceof ApolloError) {
 				formError = [err.message];
 			}
+			if (err instanceof Error) formError = [err.message];
 		}
 	}
 	async function handleSubmit() {
