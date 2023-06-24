@@ -8,7 +8,7 @@
 
 	interface UserData {
 		user: {
-			id: string;
+			id: number;
 			email: string;
 			name: string;
 			rooms: Room[];
@@ -18,11 +18,16 @@
 	interface Room {
 		id: number;
 		name: string;
+		users: {
+			id: number;
+			name: string;
+		}[];
 		messages: {
 			text: string;
 			createdAt: Date;
+			user_id: number;
 			user: {
-				id: string;
+				id: number;
 				name: string;
 			};
 		}[];
@@ -31,6 +36,7 @@
 	let selectRoom: Room | undefined;
 
 	let userData: UserData;
+
 	const getData = query<UserData>(GET_USER_DATA);
 	async function loadData() {
 		try {
@@ -56,7 +62,7 @@
 >
 	<RoomsList rooms={userData?.user.rooms} on:selectRoom={handleSelectRoom} />
 	{#if selectRoom}
-		<Chat chat={selectRoom} />
+		<Chat chat={selectRoom} user_id={userData.user.id} />
 	{:else}
 		<h1>Clique em um chat para abrir a conversa</h1>
 	{/if}

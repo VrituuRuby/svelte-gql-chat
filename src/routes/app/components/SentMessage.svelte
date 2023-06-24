@@ -1,7 +1,15 @@
 <script lang="ts">
-	import type { IMessage } from '$lib/chatService';
 	import dayjs from 'dayjs';
 
+	interface IMessage {
+		text: string;
+		user_id: number;
+		createdAt: Date;
+		user: {
+			id: number;
+			name: string;
+		};
+	}
 	export let messageData: IMessage;
 </script>
 

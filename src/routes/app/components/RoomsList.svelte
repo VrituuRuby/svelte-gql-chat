@@ -9,7 +9,7 @@
 			text: string;
 			createdAt: Date;
 			user: {
-				id: string;
+				id: number;
 				name: string;
 			};
 		}[];

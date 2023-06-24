@@ -37,10 +37,15 @@ export const GET_USER_DATA = gql`
 			email
 			createdAt
 			rooms {
+				users {
+					id
+					name
+				}
 				id
 				name
 				messages {
 					text
+					user_id
 					createdAt
 					user {
 						name
