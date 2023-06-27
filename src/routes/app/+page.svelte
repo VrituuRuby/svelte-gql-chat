@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { query } from 'svelte-apollo';
+	import { query, subscribe } from 'svelte-apollo';
 	import Chat from './components/Chat.svelte';
-	import { GET_USER_DATA } from '../../graphql/queries';
-	import { onMount } from 'svelte';
+	import { GET_USER_DATA, SUBSCRIBE_TO_MESSAGES } from '../../graphql/queries';
 	import RoomsList from './components/RoomsList.svelte';
-	import { goto } from '$app/navigation';
 
 	interface UserData {
 		user: {
@@ -33,23 +31,29 @@
 		}[];
 	}
 
-	let selectRoom: Room | undefined;
-
-	let userData: UserData;
-
-	const getData = query<UserData>(GET_USER_DATA);
-	async function loadData() {
-		try {
-			userData = (await getData.result()).data;
-		} catch (error) {
-			console.log(error);
-			goto('/login');
-		}
+	interface IMessage {
+		text: string;
+		createdAt: Date;
+		user_id: number;
+		user: {
+			id: number;
+			name: string;
+		};
 	}
 
-	onMount(loadData);
+	interface SubscribeDataMessages {
+		newMessage: IMessage;
+	}
+
+	let selectRoom: Room | undefined;
+
+	const user = query<UserData>(GET_USER_DATA);
+	const subscribeToMessages = subscribe<SubscribeDataMessages>(SUBSCRIBE_TO_MESSAGES, {
+		variables: { data: [1] }
+	});
+
 	function handleSelectRoom(event: CustomEvent) {
-		selectRoom = userData?.user.rooms.find((room) => room.id === event.detail.id);
+		selectRoom = $user?.data?.user.rooms.find((room) => room.id === event.detail.id);
 	}
 </script>
 
@@ -60,9 +64,18 @@
 <main
 	class="bg-default w-full h-full rounded-md drop-shadow-lg flex flex-1 flex-shrink-[2] basis-0 overflow-hidden"
 >
-	<RoomsList rooms={userData?.user.rooms} on:selectRoom={handleSelectRoom} />
-	{#if selectRoom}
-		<Chat chat={selectRoom} user_id={userData.user.id} />
+	{#if $user.loading}
+		<li>Loading</li>
+	{:else if $user.error}
+		<li class="text-red-600">ERROR: {$user.error}</li>
+	{:else}
+		<RoomsList rooms={$user.data?.user.rooms} on:selectRoom={handleSelectRoom} />
+	{/if}
+	{#if selectRoom && $user.data}
+		<Chat chat={selectRoom} user_id={$user?.data?.user.id} />
+		{#if $subscribeToMessages.data}
+			<p>{$subscribeToMessages.data.newMessage.text}</p>
+		{/if}
 	{:else}
 		<h1>Clique em um chat para abrir a conversa</h1>
 	{/if}

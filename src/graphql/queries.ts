@@ -29,6 +29,24 @@ export const SIGN_UP = gql`
 	}
 `;
 
+export const SEND_MESSAGE = gql`
+	mutation sendMessage($data: CreateMessageInput!) {
+		createMessage(data: $data) {
+			text
+			createdAt
+			user_id
+			room_id
+			room {
+				name
+				id
+			}
+			user {
+				name
+			}
+		}
+	}
+`;
+
 export const GET_USER_DATA = gql`
 	query {
 		user {
@@ -52,6 +70,20 @@ export const GET_USER_DATA = gql`
 						id
 					}
 				}
+			}
+		}
+	}
+`;
+
+export const SUBSCRIBE_TO_MESSAGES = gql`
+	subscription newMessages {
+		newMessage(room_ids: [1]) {
+			id
+			text
+			createdAt
+			user_id
+			user {
+				name
 			}
 		}
 	}
