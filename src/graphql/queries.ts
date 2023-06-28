@@ -76,8 +76,8 @@ export const GET_USER_DATA = gql`
 `;
 
 export const SUBSCRIBE_TO_MESSAGES = gql`
-	subscription newMessages {
-		newMessage(room_ids: [1]) {
+	subscription RoomsMessages($data: Int!) {
+		roomMessages(user_id: $data) {
 			id
 			text
 			createdAt

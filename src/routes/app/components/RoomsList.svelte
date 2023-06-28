@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
+	import { text } from '@sveltejs/kit';
 	import { createEventDispatcher } from 'svelte';
 
 	interface Room {
@@ -15,7 +16,7 @@
 		}[];
 	}
 
-	export let rooms: Room[] | undefined;
+	export let rooms: Room[];
 
 	const dispatcher = createEventDispatcher();
 
@@ -38,7 +39,7 @@
 	</div>
 	<ul class="w-full gap-2">
 		{#if rooms}
-			{#each rooms as room}
+			{#each rooms as room, i}
 				<li>
 					<button
 						on:click={() => selectRoom(room.id)}
@@ -55,7 +56,9 @@
 								<span class="text-sm font-bold text-slate-500">17:30 PM</span>
 							</div>
 							<div class="flex justify-between">
-								<p class="text-slate-500">Expecifique</p>
+								<p class="text-slate-500">
+									{room.messages.length > 0 ? room.messages.slice(-1)[0].text : ''}
+								</p>
 								<span
 									class="rounded-full text-white flex justify-center items-center w-5 h-5 text-sm font-bold bg-light-purple"
 									>+9</span

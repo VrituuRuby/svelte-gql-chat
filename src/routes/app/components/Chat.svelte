@@ -28,8 +28,6 @@
 	export let chat: Room;
 	export let user_id: number;
 
-	export let messages: IMessage[] = chat.messages;
-
 	let message = '';
 
 	const dispatcher = createEventDispatcher();
@@ -53,7 +51,7 @@
 		>
 	</header>
 	<div class="flex flex-col flex-1 gap-2 p-2 overflow-y-scroll">
-		{#each messages as msg}
+		{#each chat.messages as msg}
 			{#if msg.user_id === user_id}
 				<SentMessage messageData={msg} />
 			{:else}
