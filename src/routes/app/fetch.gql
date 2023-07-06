@@ -1,0 +1,25 @@
+query fetchData {
+	user {
+		id
+		name
+		email
+		createdAt
+		rooms {
+			users {
+				id
+				name
+			}
+			id
+			name
+			messages {
+				text
+				user_id
+				createdAt
+				user {
+					name
+					id
+				}
+			}
+		}
+	}
+}

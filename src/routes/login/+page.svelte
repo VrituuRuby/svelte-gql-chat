@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { mutation } from 'svelte-apollo';
-	import { SIGN_IN } from '../../graphql/queries.js';
 	import { ZodError, z } from 'zod';
 	import { ApolloError } from '@apollo/client/errors';
 	import { goto } from '$app/navigation';
+	import client from '../../client';
+	import { SignInDoc, type SignInMutation } from '../../generated/generated';
 
 	let email = '';
 	let password = '';
@@ -15,35 +15,33 @@
 		password: z.string().nonempty('Password is missing')
 	});
 
-	interface SignInData {
-		signIn: {
-			token: string;
-		};
-	}
-	const auth = mutation<SignInData>(SIGN_IN);
-
-	async function signIn() {
+	async function login() {
 		try {
 			const formData = getFormData.parse({ email, password });
-			const response = await auth({ variables: { data: formData } });
-			const token = response.data?.signIn?.token;
+			const token = await client()
+				.mutate<SignInMutation>({ mutation: SignInDoc, variables: { data: formData } })
+				.then((res) => res.data?.signIn.token);
+
 			token
-				? localStorage.setItem('@svelte-chat-1.0:access-token', token)
+				? localStorage.setItem('@svelte-chat-1.1.0:access-token', token)
 				: new Error('Token not recieved');
+			console.log('Added token', token);
+
 			goto('/app');
 		} catch (err) {
+			console.log(err);
 			if (err instanceof ZodError) {
 				formError = err.issues.map((e) => e.message);
-			}
-			if (err instanceof ApolloError) {
+			} else if (err instanceof ApolloError) {
+				formError = [err.message];
+			} else if (err instanceof Error) {
 				formError = [err.message];
 			}
-			if (err instanceof Error) formError = [err.message];
 		}
 	}
 	async function handleSubmit() {
 		formError = [];
-		signIn();
+		login();
 	}
 </script>
 
@@ -53,7 +51,7 @@
 
 <form
 	on:submit|preventDefault={handleSubmit}
-	class="w-full max-w-[500px] flex flex-col gap-2 mt-4 bg-gray-100 p-6 justify-center items-center font-[Roboto] rounded-md drop-shadow-lg text-sm"
+	class="w-full max-w-[500px] flex flex-col gap-2 bg-gray-100 p-6 justify-center items-center font-[Roboto] rounded-md drop-shadow-lg text-sm"
 >
 	<img src="/images/logo.svg" alt="" />
 	<h1 class="font-rubik text-lg font-bold">Welcome to GQL Chat!</h1>
@@ -98,14 +96,3 @@
 		>
 	</p>
 </form>
-
-<style lang="postcss">
-	:global(body) {
-		display: flex;
-		justify-content: center;
-		align-items: flex-start;
-		height: 100vh;
-		background: linear-gradient(116.15deg, #4772e1 4.13%, #cb397f 97.53%);
-		background-repeat: no-repeat;
-	}
-</style>

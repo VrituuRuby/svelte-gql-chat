@@ -1,0 +1,11 @@
+subscription RoomsMessages($data: Int!) {
+	roomsMessages(user_id: $data) {
+		id
+		text
+		createdAt
+		user_id
+		user {
+			name
+		}
+	}
+}

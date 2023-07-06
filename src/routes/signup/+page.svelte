@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { ApolloError } from '@apollo/client/errors';
-	import { mutation } from 'svelte-apollo';
 	import { z } from 'zod';
-	import { SIGN_UP } from '../../graphql/queries';
+	import client from '../../client';
+	import { RegisterDoc } from '../../generated/generated';
 
 	let email = '';
 	let name = '';
@@ -27,12 +27,11 @@
 			}
 		});
 
-	const register = mutation(SIGN_UP);
 	async function signUp() {
 		try {
 			const formData = getFormData.parse({ email, name, password, confirmPassword });
 			const data = { email: formData.email, password: formData.password, name: formData.name };
-			await register({ variables: { data } });
+			await client().mutate({ mutation: RegisterDoc, variables: { data } });
 			goto('/login');
 		} catch (err) {
 			if (err instanceof z.ZodError) {
@@ -119,15 +118,3 @@
 		</a>
 	</p>
 </form>
-
-<style lang="postcss">
-	:global(body) {
-		display: flex;
-		justify-content: center;
-		align-items: flex-start;
-		padding: 4rem;
-		height: 100vh;
-		background: linear-gradient(116.15deg, #4772e1 4.13%, #cb397f 97.53%);
-		background-repeat: no-repeat;
-	}
-</style>
