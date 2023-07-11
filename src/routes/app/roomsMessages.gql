@@ -1,11 +1,13 @@
-subscription RoomsMessages($data: Int!) {
-	roomsMessages(user_id: $data) {
+subscription RoomsMessages {
+	roomsMessages {
 		id
-		text
 		createdAt
+		text
 		user_id
+		room_id
 		user {
 			name
+			id
 		}
 	}
 }

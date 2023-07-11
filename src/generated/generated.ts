@@ -113,6 +113,7 @@ export type Query = {
   __typename?: 'Query';
   messages: Array<Message>;
   room: Room;
+  rooms: Array<Room>;
   user: User;
   users: Array<User>;
 };
@@ -138,19 +139,7 @@ export type Room = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  roomMessages: Message;
   roomsMessages: Message;
-};
-
-
-export type SubscriptionRoomMessagesArgs = {
-  room_id: Scalars['Int']['input'];
-  user_id: Scalars['Int']['input'];
-};
-
-
-export type SubscriptionRoomsMessagesArgs = {
-  user_id: Scalars['Int']['input'];
 };
 
 export type UpdateUserPermissionsInput = {
@@ -178,17 +167,15 @@ export type UserPermissions = {
   user_id: Scalars['Int']['output'];
 };
 
-export type RoomsMessagesSubscriptionVariables = Exact<{
-  data: Scalars['Int']['input'];
-}>;
+export type GetRoomsDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RoomsMessagesSubscription = { __typename?: 'Subscription', roomsMessages: { __typename?: 'Message', id: number, text: string, createdAt: any, user_id: number, user: { __typename?: 'User', name: string } } };
+export type GetRoomsDataQuery = { __typename?: 'Query', rooms: Array<{ __typename?: 'Room', id: number, name: string, users: Array<{ __typename?: 'User', name: string, id: number }>, messages: Array<{ __typename?: 'Message', id: number, createdAt: any, text: string, user_id: number, room_id: number, user: { __typename?: 'User', name: string, id: number } }> }> };
 
-export type FetchDataQueryVariables = Exact<{ [key: string]: never; }>;
+export type RoomsMessagesSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchDataQuery = { __typename?: 'Query', user: { __typename?: 'User', id: number, name: string, email: string, createdAt: any, rooms: Array<{ __typename?: 'Room', id: number, name: string, users: Array<{ __typename?: 'User', id: number, name: string }>, messages: Array<{ __typename?: 'Message', text: string, user_id: number, createdAt: any, user: { __typename?: 'User', name: string, id: number } }> }> } };
+export type RoomsMessagesSubscription = { __typename?: 'Subscription', roomsMessages: { __typename?: 'Message', id: number, createdAt: any, text: string, user_id: number, room_id: number, user: { __typename?: 'User', name: string, id: number } } };
 
 export type SignInMutationVariables = Exact<{
   data: AuthInput;
@@ -205,42 +192,40 @@ export type RegisterMutationVariables = Exact<{
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'User', id: number, name: string, createdAt: any, permissions?: Array<string> | null } };
 
 
-export const RoomsMessagesDoc = gql`
-    subscription RoomsMessages($data: Int!) {
-  roomsMessages(user_id: $data) {
+export const GetRoomsDataDoc = gql`
+    query getRoomsData {
+  rooms {
     id
-    text
-    createdAt
-    user_id
-    user {
+    name
+    users {
       name
+      id
+    }
+    messages {
+      id
+      createdAt
+      text
+      user_id
+      room_id
+      user {
+        name
+        id
+      }
     }
   }
 }
     `;
-export const FetchDataDoc = gql`
-    query fetchData {
-  user {
+export const RoomsMessagesDoc = gql`
+    subscription RoomsMessages {
+  roomsMessages {
     id
-    name
-    email
     createdAt
-    rooms {
-      users {
-        id
-        name
-      }
-      id
+    text
+    user_id
+    room_id
+    user {
       name
-      messages {
-        text
-        user_id
-        createdAt
-        user {
-          name
-          id
-        }
-      }
+      id
     }
   }
 }
@@ -262,39 +247,28 @@ export const RegisterDoc = gql`
   }
 }
     `;
-export const RoomsMessages = (
-            options: Omit<SubscriptionOptions<RoomsMessagesSubscriptionVariables>, "query">
-          ) => {
-            const q = client.subscribe<RoomsMessagesSubscription, RoomsMessagesSubscriptionVariables>(
-              {
-                query: RoomsMessagesDoc,
-                ...options,
-              }
-            )
-            return q;
-          }
-export const fetchData = (
+export const getRoomsData = (
             options: Omit<
-              WatchQueryOptions<FetchDataQueryVariables>, 
+              WatchQueryOptions<GetRoomsDataQueryVariables>, 
               "query"
             >
           ): Readable<
-            ApolloQueryResult<FetchDataQuery> & {
+            ApolloQueryResult<GetRoomsDataQuery> & {
               query: ObservableQuery<
-                FetchDataQuery,
-                FetchDataQueryVariables
+                GetRoomsDataQuery,
+                GetRoomsDataQueryVariables
               >;
             }
           > => {
             const q = client.watchQuery({
-              query: FetchDataDoc,
+              query: GetRoomsDataDoc,
               ...options,
             });
             var result = readable<
-              ApolloQueryResult<FetchDataQuery> & {
+              ApolloQueryResult<GetRoomsDataQuery> & {
                 query: ObservableQuery<
-                  FetchDataQuery,
-                  FetchDataQueryVariables
+                  GetRoomsDataQuery,
+                  GetRoomsDataQueryVariables
                 >;
               }
             >(
@@ -308,15 +282,26 @@ export const fetchData = (
             return result;
           }
         
-              export const AsyncfetchData = (
+              export const AsyncgetRoomsData = (
                 options: Omit<
-                  QueryOptions<FetchDataQueryVariables>,
+                  QueryOptions<GetRoomsDataQueryVariables>,
                   "query"
                 >
               ) => {
-                return client.query<FetchDataQuery>({query: FetchDataDoc, ...options})
+                return client.query<GetRoomsDataQuery>({query: GetRoomsDataDoc, ...options})
               }
             
+export const RoomsMessages = (
+            options: Omit<SubscriptionOptions<RoomsMessagesSubscriptionVariables>, "query">
+          ) => {
+            const q = client.subscribe<RoomsMessagesSubscription, RoomsMessagesSubscriptionVariables>(
+              {
+                query: RoomsMessagesDoc,
+                ...options,
+              }
+            )
+            return q;
+          }
 export const signIn = (
             options: Omit<
               MutationOptions<any, SignInMutationVariables>, 

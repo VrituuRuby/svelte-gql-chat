@@ -1,25 +1,32 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import client from '../../client';
-	import { FetchDataDoc } from '../../generated/generated';
-	import type { FetchDataQuery, Room } from '../../generated/generated';
-	import { goto } from '$app/navigation';
+	import RoomsList from './components/RoomsList.svelte';
+	import { rooms } from './roomsStore';
 
-	let loading = true;
-	let rooms;
-	onMount(async () => {
-		const token = localStorage.getItem('@svelte-chat-1.1.0:access-token');
+	interface IRoom {
+		id: number;
+		name: string;
+		messages: {
+			id: number;
+			createdAt: Date;
+			text: string;
+			room_id?: number;
+			user_id: number;
+			user: {
+				id?: number;
+				name: string;
+			};
+		}[];
+		users: {
+			id: number;
+			name: string;
+		}[];
+	}
 
-		try {
-			const data = await client(token).query<FetchDataQuery>({ query: FetchDataDoc });
-			rooms = data.data.user.rooms;
-			console.log(data);
-			loading = false;
-		} catch (err) {
-			console.log(err);
-			goto('/login');
-		}
-	});
+	let selectedRoom: IRoom | undefined;
+
+	function handleRoomSelection(event: CustomEvent) {
+		selectedRoom = $rooms[event.detail];
+	}
 </script>
 
 <svelte:head>
@@ -27,23 +34,22 @@
 </svelte:head>
 
 <main
-	class="bg-default w-full h-full rounded-md drop-shadow-lg flex flex-1 flex-shrink-[2] basis-0 overflow-hidden justify-center item"
+	class="bg-default w-full h-full rounded-md drop-shadow-lg flex flex-1 flex-shrink-[2] basis-0 overflow-hidden"
 >
-	{#if loading}
-		<div class="h-full w-full grid content-center justify-center">
-			<div
-				class="rounded-full w-[200px] h-[200px] border-[20px] border-slate-400 border-t-slate-600 animate-spin"
-			/>
-		</div>
-	{:else}
-		<div>
-			<p>{JSON.stringify(rooms)}</p>
-		</div>
-	{/if}
+	<div class="w-[300px]">
+		<RoomsList on:roomSelect={handleRoomSelection} />
+	</div>
+	<div>
+		{#if selectedRoom}
+			<ul>
+				{#each $rooms[0].messages as message}
+					<p>
+						{message.user.name}
+						{message.text}
+						<span>{message.createdAt}</span>
+					</p>
+				{/each}
+			</ul>
+		{/if}
+	</div>
 </main>
-
-<style lang="postcss">
-	:global(body) {
-		padding: 0.5rem;
-	}
-</style>

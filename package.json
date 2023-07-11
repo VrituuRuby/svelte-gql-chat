@@ -47,7 +47,7 @@
 		"@apollo/client": "^3.7.16",
 		"@graphql-codegen/client-preset": "^4.0.1",
 		"@urql/svelte": "^4.0.2",
-		"dayjs": "^1.11.8",
+		"dayjs": "^1.11.9",
 		"dotenv": "^16.3.1",
 		"graphql": "^16.7.1",
 		"graphql-ws": "^5.14.0",
