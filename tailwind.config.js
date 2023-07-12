@@ -10,9 +10,12 @@ export default {
 				roboto: ['Roboto', 'sans-serif'],
 				rubik: ['Rubik', 'sans-serif']
 			},
+
 			colors: {
 				'neu-shadow': '#9AB0CB',
 				'light-gray': '#E2E9F3',
+				gray: '#9998B2',
+				'dark-slate': '#3F3E50',
 				'light-purple': '#BBA6F8'
 			},
 			boxShadow: {

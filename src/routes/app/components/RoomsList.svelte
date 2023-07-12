@@ -1,55 +1,15 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
-	import { rooms } from '../roomsStore';
-	import client from '../../../client';
+	import { createEventDispatcher } from 'svelte';
 	import dayjs from 'dayjs';
-	import {
-		GetRoomsDataDoc,
-		RoomsMessagesDoc,
-		type GetRoomsDataQuery,
-		type RoomsMessagesSubscription
-	} from '../../../generated/generated';
-	import { goto } from '$app/navigation';
+	import { AppStore } from '../AppStore';
 
 	let dispatcher = createEventDispatcher();
-	let loading = true;
+
+	export let loading: boolean;
 
 	function handleRoomSelection(roomIndex: number) {
 		dispatcher('roomSelect', roomIndex);
 	}
-
-	onMount(async () => {
-		const token = localStorage.getItem('@svelte-chat-1.1.0:access-token');
-		const api = client(token);
-
-		try {
-			const data = await api.query<GetRoomsDataQuery>({ query: GetRoomsDataDoc });
-			rooms.setRooms(data.data.rooms);
-			loading = false;
-		} catch (err) {
-			console.log('Error with the token', err);
-			goto('/login');
-		}
-
-		try {
-			api
-				.subscribe<RoomsMessagesSubscription>({
-					query: RoomsMessagesDoc
-				})
-				.subscribe({
-					next: ({ data }) => {
-						if (data) {
-							rooms.addMessage({
-								roomId: data.roomsMessages.room_id,
-								roomMessage: data.roomsMessages
-							});
-						}
-					}
-				});
-		} catch (err) {
-			console.log('Error with new messages subscription', err);
-		}
-	});
 
 	function nameShorterner(name: string) {
 		let words = name.split(' ');
@@ -63,37 +23,39 @@
 	}
 
 	function formatDate(date: Date) {
-		return dayjs(date).format('HH:mmA');
+		return dayjs(date).format('HH:mm A');
 	}
 </script>
 
-<ul class="w-full">
+<ul class="flex flex-col">
 	{#if loading}
 		<p>Loading...</p>
 	{:else}
-		{#each $rooms as room, i}
-			<li class="w-full">
-				<button on:click={() => handleRoomSelection(i)} class="flex gap-2 w-full p-2 items-center">
+		{#each $AppStore.rooms as room, i}
+			<li class="font-roboto">
+				<button on:click={() => handleRoomSelection(i)} class="flex gap-2 w-full p-2 items-start">
 					<div
-						class=" p-4 bg-blue-400 text-white flex items-center justify-center rounded-full border-white border drop-shadow-neu-outter"
+						class="min-w-[50px] min-h-[50px] text-2xl font-bold bg-blue-400 text-white flex items-center justify-center rounded-full border-white drop-shadow-neu-outter border-2"
 					>
 						{nameShorterner(room.name)}
 					</div>
 
-					<div class="flex flex-col flex-1 gap-1">
-						<div class="flex justify-between w-full items-center">
-							<h3 class="font-bold text-slate-800">{room.name}</h3>
-							<span class="text-xs font-bold text-slate-500"
-								>{formatDate(room.messages.slice(-1)[0].createdAt)}</span
-							>
-						</div>
+					<div class="flex flex-col justify-start truncate w-full">
 						{#if room.messages.length > 0}
-							<p class="text-left text-sm">
-								<strong class="text-slate-600">
+							<div class="flex justify-between items-center gap-2">
+								<h3 class="font-bold text-lg text-dark-slate truncate">{room.name}</h3>
+								<span class="font-bold text-gray">
+									{formatDate(room.messages.slice(-1)[0].createdAt || '')}
+								</span>
+							</div>
+							<p class="text-left text-default text-slate-600 truncate">
+								<strong>
 									{room.messages.slice(-1)[0].user.name}:
 								</strong>
 								{room.messages.slice(-1)[0].text}
 							</p>
+						{:else}
+							<h3 class="font-bold text-lg text-dark-slate truncate">{room.name}</h3>
 						{/if}
 					</div>
 				</button>

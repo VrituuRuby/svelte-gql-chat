@@ -51,7 +51,7 @@
 
 <form
 	on:submit|preventDefault={handleSubmit}
-	class="w-full max-w-[500px] flex flex-col gap-2 bg-gray-100 p-6 justify-center items-center font-[Roboto] rounded-md drop-shadow-lg text-sm"
+	class="w-full max-w-[500px] flex flex-col gap-2 bg-gray-100 p-6 justify-center items-center font-[Roboto] rounded-md drop-shadow-lg text-sm bg-default"
 >
 	<img src="/images/logo.svg" alt="" />
 	<h1 class="font-rubik text-lg font-bold">Welcome to GQL Chat!</h1>
