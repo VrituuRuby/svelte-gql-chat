@@ -18,16 +18,23 @@
 	async function login() {
 		try {
 			const formData = getFormData.parse({ email, password });
-			const token = await client()
-				.mutate<SignInMutation>({ mutation: SignInDoc, variables: { data: formData } })
-				.then((res) => res.data?.signIn.token);
+			const { data } = await client().mutate<SignInMutation>({
+				mutation: SignInDoc,
+				variables: { data: formData }
+			});
 
-			token
-				? localStorage.setItem('@svelte-chat-1.1.0:access-token', token)
-				: new Error('Token not recieved');
-			console.log('Added token', token);
+			if (data) {
+				const { token, user } = data?.signIn;
 
-			goto('/app');
+				token
+					? localStorage.setItem('@svelte-chat-1.1.0:access-token', token)
+					: new Error('Token not recieved');
+				user
+					? localStorage.setItem('@svelte-chat-1.1.0:user-id', String(user.id))
+					: new Error('User not recieved');
+
+				goto('/app');
+			}
 		} catch (err) {
 			console.log(err);
 			if (err instanceof ZodError) {

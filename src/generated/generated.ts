@@ -177,12 +177,19 @@ export type RoomsMessagesSubscriptionVariables = Exact<{ [key: string]: never; }
 
 export type RoomsMessagesSubscription = { __typename?: 'Subscription', roomsMessages: { __typename?: 'Message', id: number, createdAt: any, text: string, user_id: number, room_id: number, user: { __typename?: 'User', name: string, id: number } } };
 
+export type SendMessageMutationVariables = Exact<{
+  data: CreateMessageInput;
+}>;
+
+
+export type SendMessageMutation = { __typename?: 'Mutation', createMessage: { __typename?: 'Message', id: number, text: string, createdAt: any, user_id: number, room_id: number } };
+
 export type SignInMutationVariables = Exact<{
   data: AuthInput;
 }>;
 
 
-export type SignInMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthDTO', token: string } };
+export type SignInMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthDTO', token: string, user: { __typename?: 'User', id: number } } };
 
 export type RegisterMutationVariables = Exact<{
   data: CreateUserInput;
@@ -230,10 +237,24 @@ export const RoomsMessagesDoc = gql`
   }
 }
     `;
+export const SendMessageDoc = gql`
+    mutation sendMessage($data: CreateMessageInput!) {
+  createMessage(data: $data) {
+    id
+    text
+    createdAt
+    user_id
+    room_id
+  }
+}
+    `;
 export const SignInDoc = gql`
     mutation signIn($data: AuthInput!) {
   signIn(data: $data) {
     token
+    user {
+      id
+    }
   }
 }
     `;
@@ -301,6 +322,18 @@ export const RoomsMessages = (
               }
             )
             return q;
+          }
+export const sendMessage = (
+            options: Omit<
+              MutationOptions<any, SendMessageMutationVariables>, 
+              "mutation"
+            >
+          ) => {
+            const m = client.mutate<SendMessageMutation, SendMessageMutationVariables>({
+              mutation: SendMessageDoc,
+              ...options,
+            });
+            return m;
           }
 export const signIn = (
             options: Omit<

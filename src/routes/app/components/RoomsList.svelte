@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import dayjs from 'dayjs';
-	import { AppStore } from '../AppStore';
+	import { rooms } from '../RoomsStore';
 
 	let dispatcher = createEventDispatcher();
 
@@ -27,13 +27,16 @@
 	}
 </script>
 
-<ul class="flex flex-col">
+<ul class="flex flex-col w-1/4">
 	{#if loading}
 		<p>Loading...</p>
 	{:else}
-		{#each $AppStore.rooms as room, i}
+		{#each $rooms as room, i}
 			<li class="font-roboto">
-				<button on:click={() => handleRoomSelection(i)} class="flex gap-2 w-full p-2 items-start">
+				<button
+					on:click={() => handleRoomSelection(room.id)}
+					class="flex gap-2 w-full p-2 items-start"
+				>
 					<div
 						class="min-w-[50px] min-h-[50px] text-2xl font-bold bg-blue-400 text-white flex items-center justify-center rounded-full border-white drop-shadow-neu-outter border-2"
 					>
@@ -48,7 +51,7 @@
 									{formatDate(room.messages.slice(-1)[0].createdAt || '')}
 								</span>
 							</div>
-							<p class="text-left text-default text-slate-600 truncate">
+							<p class="text-left text-default text-gray truncate">
 								<strong>
 									{room.messages.slice(-1)[0].user.name}:
 								</strong>

@@ -1,0 +1,9 @@
+mutation sendMessage($data: CreateMessageInput!) {
+	createMessage(data: $data) {
+		id
+		text
+		createdAt
+		user_id
+		room_id
+	}
+}
