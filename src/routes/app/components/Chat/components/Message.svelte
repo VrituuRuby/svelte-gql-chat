@@ -21,9 +21,8 @@
 
 <div class="flex flex-col {isSender ? 'items-end' : 'items-start'} text-slight-black">
 	<p
-		class="p-2 bg-slate-100 rounded-md text-slight-black drop-shadow-neu-outter {isSender
-			? 'bg-light-purple'
-			: 'bg-slate-100'}"
+		class="p-2 rounded-lg text-slight-black drop-shadow-neu-outter
+		{isSender ? 'bg-light-purple rounded-br-none' : 'bg-slate-100 rounded-bl-none'}"
 	>
 		{message.text}
 	</p>

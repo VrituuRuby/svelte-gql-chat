@@ -55,6 +55,7 @@ export type CreateUserInput = {
 };
 
 export type GetMessageInput = {
+  orderBy?: Scalars['String']['input'];
   room_id: Scalars['Float']['input'];
 };
 
@@ -137,6 +138,11 @@ export type Room = {
   usersPermissions: Array<UserPermissions>;
 };
 
+
+export type RoomMessagesArgs = {
+  orderBy: Scalars['String']['input'];
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
   roomsMessages: Message;
@@ -208,7 +214,7 @@ export const GetRoomsDataDoc = gql`
       name
       id
     }
-    messages {
+    messages(orderBy: "asc") {
       id
       createdAt
       text

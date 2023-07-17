@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { afterUpdate, beforeUpdate, createEventDispatcher, onMount } from 'svelte';
 	import client from '../../../../client';
 	import type { IRoom } from '../../RoomsStore';
 	import Message from './components/Message.svelte';
@@ -7,6 +7,28 @@
 	export let room: IRoom;
 
 	let text = '';
+
+	let main: HTMLElement;
+	let autoscroll = false;
+
+	beforeUpdate(() => {
+		if (main) {
+			const scrollableDistance = main.scrollHeight - main.offsetHeight;
+			autoscroll = main.scrollTop > scrollableDistance - 20;
+		}
+	});
+
+	afterUpdate(() => {
+		if (autoscroll) {
+			main.scrollTo(0, main.scrollHeight);
+		}
+	});
+
+	onMount(() => {
+		if (main) {
+			main.scrollTop = main.scrollHeight;
+		}
+	});
 
 	const dispatcher = createEventDispatcher();
 	function handleSendMessage() {
@@ -23,8 +45,8 @@
 		<h3 class="text-dark-slate font-bold truncate">{room.name}</h3>
 		<p class="text-small font-bold text-gray">{room.users.map((user) => user.name).join(', ')}</p>
 	</header>
-	<main class="p-4 flex-1 overflow-y-auto">
-		<ul>
+	<main class="p-4 flex-1 overflow-y-auto scroll-smooth" bind:this={main}>
+		<ul class="gap-2 flex-col flex">
 			{#each room.messages as message}
 				<Message {message} />
 			{/each}

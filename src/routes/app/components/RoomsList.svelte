@@ -58,7 +58,7 @@
 								{room.messages.slice(-1)[0].text}
 							</p>
 						{:else}
-							<h3 class="font-bold text-lg text-dark-slate truncate">{room.name}</h3>
+							<h3 class="font-bold text-lg text-left text-dark-slate truncate">{room.name}</h3>
 						{/if}
 					</div>
 				</button>
