@@ -33,7 +33,6 @@
 	const dispatcher = createEventDispatcher();
 	function handleSendMessage() {
 		if (text.trim().length > 0) {
-			console.log(text);
 			dispatcher('sendMessage', { text, room_id: room.id });
 			text = '';
 		}

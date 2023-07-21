@@ -10,10 +10,6 @@
 		isSender = Number(loggedUserId) === message.user_id ? true : false;
 	}
 
-	console.log(
-		`Message ${message.text} is from user_id: ${message.user_id}, and current logged user_id is: ${loggedUserId}`
-	);
-
 	function timeFormat(date: Date): String {
 		return dayjs(date).format('HH:mm A');
 	}

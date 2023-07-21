@@ -36,7 +36,6 @@
 				goto('/app');
 			}
 		} catch (err) {
-			console.log(err);
 			if (err instanceof ZodError) {
 				formError = err.issues.map((e) => e.message);
 			} else if (err instanceof ApolloError) {

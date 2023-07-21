@@ -19,7 +19,6 @@
 
 	function handleRoomSelection(event: CustomEvent) {
 		selectedRoomIndex = $rooms.findIndex((r) => r.id === event.detail);
-		console.log(event.detail);
 	}
 
 	function handleSendMessage(event: CustomEvent) {
@@ -39,7 +38,6 @@
 			const data = await api.query<GetRoomsDataQuery>({ query: GetRoomsDataDoc });
 			rooms.setRooms(data.data.rooms);
 			loading = false;
-			console.log(loading);
 		} catch (err) {
 			console.log('Error with the token', err);
 			goto('/login');

@@ -5,8 +5,6 @@ import { setContext } from '@apollo/client/link/context';
 import { createClient } from 'graphql-ws';
 
 const client = (token?: string | null) => {
-	console.log('Now using token', token);
-
 	const httpLink = createHttpLink({
 		uri: 'http://localhost:3000/graphql'
 	});
