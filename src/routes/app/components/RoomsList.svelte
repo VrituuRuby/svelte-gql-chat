@@ -2,6 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import dayjs from 'dayjs';
 	import { rooms } from '../RoomsStore';
+	import SearchBar from './SearchBar.svelte';
 
 	let dispatcher = createEventDispatcher();
 
@@ -27,7 +28,8 @@
 	}
 </script>
 
-<ul class="flex flex-col w-1/4">
+<ul class="flex flex-col w-1/4 p-2 shadow-2xl z-20">
+	<SearchBar on:open_add_friend on:open_create_room />
 	{#if loading}
 		<p>Loading...</p>
 	{:else}
@@ -40,13 +42,21 @@
 					<div
 						class="min-w-[50px] min-h-[50px] text-2xl font-bold bg-blue-400 text-white flex items-center justify-center rounded-full border-white drop-shadow-neu-outter border-2"
 					>
-						{nameShorterner(room.name)}
+						{#if room.name}
+							{nameShorterner(room.name)}
+						{/if}
 					</div>
 
 					<div class="flex flex-col justify-start truncate w-full">
 						{#if room.messages.length > 0}
 							<div class="flex justify-between items-center gap-2">
-								<h3 class="font-bold text-lg text-dark-slate truncate">{room.name}</h3>
+								{#if room.name}
+									<h3 class="font-bold text-lg text-dark-slate truncate">{room.name}</h3>
+								{:else}
+									<h3 class="font-bold text-lg text-dark-slate truncate">
+										{room.users.map((user) => user.name).join(',')}
+									</h3>
+								{/if}
 								<span class="font-bold text-gray">
 									{formatDate(room.messages.slice(-1)[0].createdAt || '')}
 								</span>

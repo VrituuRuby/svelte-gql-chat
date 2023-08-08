@@ -44,7 +44,7 @@
 		<h3 class="text-dark-slate font-bold truncate">{room.name}</h3>
 		<p class="text-small font-bold text-gray">{room.users.map((user) => user.name).join(', ')}</p>
 	</header>
-	<main class="p-4 flex-1 overflow-y-auto scroll-smooth" bind:this={main}>
+	<main class={`p-4 flex-1  overflow-y-auto ${autoscroll ? 'scroll-smooth' : ''}`} bind:this={main}>
 		<ul class="gap-2 flex-col flex">
 			{#each room.messages as message}
 				<Message {message} />

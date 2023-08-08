@@ -13,9 +13,15 @@
 	} from '../../generated/generated';
 	import { goto } from '$app/navigation';
 	import { rooms } from './RoomsStore';
+	import Modal from '../components/Modal.svelte';
+	import CreateRoom from './components/CreateRoom.svelte';
+	import AddFriend from './components/AddFriend.svelte';
 
 	let loading = true;
 	let selectedRoomIndex: number;
+
+	let showAddFriend = false;
+	let showCreateRoom = false;
 
 	function handleRoomSelection(event: CustomEvent) {
 		selectedRoomIndex = $rooms.findIndex((r) => r.id === event.detail);
@@ -71,7 +77,22 @@
 <main
 	class="bg-default h-full rounded-md drop-shadow-lg flex flex-1 flex-shrink-[2] basis-0 overflow-hidden"
 >
-	<RoomsList on:roomSelect={handleRoomSelection} {loading} />
+	<Modal showModal={showAddFriend} on:close_modal={() => (showAddFriend = false)}>
+		<AddFriend />
+	</Modal>
+	<Modal showModal={showCreateRoom} on:close_modal={() => (showCreateRoom = false)}>
+		<CreateRoom />
+	</Modal>
+
+	<RoomsList
+		on:roomSelect={handleRoomSelection}
+		{loading}
+		on:open_add_friend={() => {
+			showAddFriend = true;
+			console.log('add friend click');
+		}}
+		on:open_create_room={() => (showCreateRoom = true)}
+	/>
 	{#if selectedRoomIndex !== undefined}
 		<Chat room={$rooms[selectedRoomIndex]} on:sendMessage={handleSendMessage} />
 	{:else}

@@ -72,12 +72,18 @@ export type Message = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addFriend: User;
   addUsersToRoom: Room;
   createMessage: Message;
   createRoom: Room;
   register: User;
   signIn: AuthDto;
   updateUserPermissions: UserPermissions;
+};
+
+
+export type MutationAddFriendArgs = {
+  friendId: Scalars['Int']['input'];
 };
 
 
@@ -116,7 +122,7 @@ export type Query = {
   room: Room;
   rooms: Array<Room>;
   user: User;
-  users: Array<User>;
+  userByEmail: User;
 };
 
 
@@ -127,6 +133,11 @@ export type QueryMessagesArgs = {
 
 export type QueryRoomArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type QueryUserByEmailArgs = {
+  email: Scalars['String']['input'];
 };
 
 export type Room = {
@@ -158,6 +169,7 @@ export type User = {
   __typename?: 'User';
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
+  friends?: Maybe<Array<User>>;
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   permissions?: Maybe<Array<Scalars['String']['output']>>;
@@ -173,10 +185,24 @@ export type UserPermissions = {
   user_id: Scalars['Int']['output'];
 };
 
+export type FindUserByEmailQueryVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type FindUserByEmailQuery = { __typename?: 'Query', userByEmail: { __typename?: 'User', id: number, name: string, email: string, createdAt: any, permissions?: Array<string> | null } };
+
 export type GetRoomsDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetRoomsDataQuery = { __typename?: 'Query', rooms: Array<{ __typename?: 'Room', id: number, name: string, users: Array<{ __typename?: 'User', name: string, id: number }>, messages: Array<{ __typename?: 'Message', id: number, createdAt: any, text: string, user_id: number, room_id: number, user: { __typename?: 'User', name: string, id: number } }> }> };
+
+export type FindUserQueryVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type FindUserQuery = { __typename?: 'Query', userByEmail: { __typename?: 'User', id: number } };
 
 export type RoomsMessagesSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -205,6 +231,17 @@ export type RegisterMutationVariables = Exact<{
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'User', id: number, name: string, createdAt: any, permissions?: Array<string> | null } };
 
 
+export const FindUserByEmailDoc = gql`
+    query findUserByEmail($email: String!) {
+  userByEmail(email: $email) {
+    id
+    name
+    email
+    createdAt
+    permissions
+  }
+}
+    `;
 export const GetRoomsDataDoc = gql`
     query getRoomsData {
   rooms {
@@ -225,6 +262,13 @@ export const GetRoomsDataDoc = gql`
         id
       }
     }
+  }
+}
+    `;
+export const FindUserDoc = gql`
+    query findUser($email: String!) {
+  userByEmail(email: $email) {
+    id
   }
 }
     `;
@@ -274,6 +318,50 @@ export const RegisterDoc = gql`
   }
 }
     `;
+export const findUserByEmail = (
+            options: Omit<
+              WatchQueryOptions<FindUserByEmailQueryVariables>, 
+              "query"
+            >
+          ): Readable<
+            ApolloQueryResult<FindUserByEmailQuery> & {
+              query: ObservableQuery<
+                FindUserByEmailQuery,
+                FindUserByEmailQueryVariables
+              >;
+            }
+          > => {
+            const q = client.watchQuery({
+              query: FindUserByEmailDoc,
+              ...options,
+            });
+            var result = readable<
+              ApolloQueryResult<FindUserByEmailQuery> & {
+                query: ObservableQuery<
+                  FindUserByEmailQuery,
+                  FindUserByEmailQueryVariables
+                >;
+              }
+            >(
+              { data: {} as any, loading: true, error: undefined, networkStatus: 1, query: q },
+              (set) => {
+                q.subscribe((v: any) => {
+                  set({ ...v, query: q });
+                });
+              }
+            );
+            return result;
+          }
+        
+              export const AsyncfindUserByEmail = (
+                options: Omit<
+                  QueryOptions<FindUserByEmailQueryVariables>,
+                  "query"
+                >
+              ) => {
+                return client.query<FindUserByEmailQuery>({query: FindUserByEmailDoc, ...options})
+              }
+            
 export const getRoomsData = (
             options: Omit<
               WatchQueryOptions<GetRoomsDataQueryVariables>, 
@@ -316,6 +404,50 @@ export const getRoomsData = (
                 >
               ) => {
                 return client.query<GetRoomsDataQuery>({query: GetRoomsDataDoc, ...options})
+              }
+            
+export const findUser = (
+            options: Omit<
+              WatchQueryOptions<FindUserQueryVariables>, 
+              "query"
+            >
+          ): Readable<
+            ApolloQueryResult<FindUserQuery> & {
+              query: ObservableQuery<
+                FindUserQuery,
+                FindUserQueryVariables
+              >;
+            }
+          > => {
+            const q = client.watchQuery({
+              query: FindUserDoc,
+              ...options,
+            });
+            var result = readable<
+              ApolloQueryResult<FindUserQuery> & {
+                query: ObservableQuery<
+                  FindUserQuery,
+                  FindUserQueryVariables
+                >;
+              }
+            >(
+              { data: {} as any, loading: true, error: undefined, networkStatus: 1, query: q },
+              (set) => {
+                q.subscribe((v: any) => {
+                  set({ ...v, query: q });
+                });
+              }
+            );
+            return result;
+          }
+        
+              export const AsyncfindUser = (
+                options: Omit<
+                  QueryOptions<FindUserQueryVariables>,
+                  "query"
+                >
+              ) => {
+                return client.query<FindUserQuery>({query: FindUserDoc, ...options})
               }
             
 export const RoomsMessages = (
