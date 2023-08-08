@@ -143,8 +143,9 @@ export type QueryUserByEmailArgs = {
 export type Room = {
   __typename?: 'Room';
   id: Scalars['Int']['output'];
+  isPrivate: Scalars['Boolean']['output'];
   messages: Array<Message>;
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   users: Array<User>;
   usersPermissions: Array<UserPermissions>;
 };
@@ -192,10 +193,22 @@ export type FindUserByEmailQueryVariables = Exact<{
 
 export type FindUserByEmailQuery = { __typename?: 'Query', userByEmail: { __typename?: 'User', id: number, name: string, email: string, createdAt: any, permissions?: Array<string> | null } };
 
+export type CreateRoomMutationVariables = Exact<{
+  data: CreateRoomInput;
+}>;
+
+
+export type CreateRoomMutation = { __typename?: 'Mutation', createRoom: { __typename?: 'Room', id: number, name?: string | null, users: Array<{ __typename?: 'User', name: string }> } };
+
+export type ListFriendsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListFriendsQuery = { __typename?: 'Query', user: { __typename?: 'User', name: string, friends?: Array<{ __typename?: 'User', id: number, name: string, email: string }> | null } };
+
 export type GetRoomsDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRoomsDataQuery = { __typename?: 'Query', rooms: Array<{ __typename?: 'Room', id: number, name: string, users: Array<{ __typename?: 'User', name: string, id: number }>, messages: Array<{ __typename?: 'Message', id: number, createdAt: any, text: string, user_id: number, room_id: number, user: { __typename?: 'User', name: string, id: number } }> }> };
+export type GetRoomsDataQuery = { __typename?: 'Query', rooms: Array<{ __typename?: 'Room', id: number, name?: string | null, users: Array<{ __typename?: 'User', name: string, id: number }>, messages: Array<{ __typename?: 'Message', id: number, createdAt: any, text: string, user_id: number, room_id: number, user: { __typename?: 'User', name: string, id: number } }> }> };
 
 export type FindUserQueryVariables = Exact<{
   email: Scalars['String']['input'];
@@ -239,6 +252,29 @@ export const FindUserByEmailDoc = gql`
     email
     createdAt
     permissions
+  }
+}
+    `;
+export const CreateRoomDoc = gql`
+    mutation createRoom($data: CreateRoomInput!) {
+  createRoom(data: $data) {
+    id
+    name
+    users {
+      name
+    }
+  }
+}
+    `;
+export const ListFriendsDoc = gql`
+    query listFriends {
+  user {
+    name
+    friends {
+      id
+      name
+      email
+    }
   }
 }
     `;
@@ -360,6 +396,62 @@ export const findUserByEmail = (
                 >
               ) => {
                 return client.query<FindUserByEmailQuery>({query: FindUserByEmailDoc, ...options})
+              }
+            
+export const createRoom = (
+            options: Omit<
+              MutationOptions<any, CreateRoomMutationVariables>, 
+              "mutation"
+            >
+          ) => {
+            const m = client.mutate<CreateRoomMutation, CreateRoomMutationVariables>({
+              mutation: CreateRoomDoc,
+              ...options,
+            });
+            return m;
+          }
+export const listFriends = (
+            options: Omit<
+              WatchQueryOptions<ListFriendsQueryVariables>, 
+              "query"
+            >
+          ): Readable<
+            ApolloQueryResult<ListFriendsQuery> & {
+              query: ObservableQuery<
+                ListFriendsQuery,
+                ListFriendsQueryVariables
+              >;
+            }
+          > => {
+            const q = client.watchQuery({
+              query: ListFriendsDoc,
+              ...options,
+            });
+            var result = readable<
+              ApolloQueryResult<ListFriendsQuery> & {
+                query: ObservableQuery<
+                  ListFriendsQuery,
+                  ListFriendsQueryVariables
+                >;
+              }
+            >(
+              { data: {} as any, loading: true, error: undefined, networkStatus: 1, query: q },
+              (set) => {
+                q.subscribe((v: any) => {
+                  set({ ...v, query: q });
+                });
+              }
+            );
+            return result;
+          }
+        
+              export const AsynclistFriends = (
+                options: Omit<
+                  QueryOptions<ListFriendsQueryVariables>,
+                  "query"
+                >
+              ) => {
+                return client.query<ListFriendsQuery>({query: ListFriendsDoc, ...options})
               }
             
 export const getRoomsData = (

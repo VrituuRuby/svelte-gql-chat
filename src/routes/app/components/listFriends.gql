@@ -1,0 +1,10 @@
+query listFriends {
+	user {
+		name
+		friends {
+			id
+			name
+			email
+		}
+	}
+}

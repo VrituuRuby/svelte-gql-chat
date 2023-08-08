@@ -16,6 +16,7 @@
 	import Modal from '../components/Modal.svelte';
 	import CreateRoom from './components/CreateRoom.svelte';
 	import AddFriend from './components/AddFriend.svelte';
+	import { tokenKey } from '$lib/api';
 
 	let loading = true;
 	let selectedRoomIndex: number;
@@ -28,7 +29,7 @@
 	}
 
 	function handleSendMessage(event: CustomEvent) {
-		const token = localStorage.getItem('@svelte-chat-1.1.0:access-token');
+		const token = localStorage.getItem(tokenKey);
 		const api = client(token);
 
 		const data = event.detail;
@@ -37,7 +38,7 @@
 	}
 
 	onMount(async () => {
-		const token = localStorage.getItem('@svelte-chat-1.1.0:access-token');
+		const token = localStorage.getItem(tokenKey);
 		const api = client(token);
 
 		try {
